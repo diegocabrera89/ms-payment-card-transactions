@@ -1,0 +1,83 @@
+service: ms-payment-card-transactions
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: provided.al2023
+  architecture: arm64
+  stage: dev
+  timeout: 29
+  logRetentionInDays: 7
+  environment:
+    REGION: us-east-1
+    TOKEN_DYNAMODB: ${self:resources.Resources.token.Properties.TableName}
+    TRANSACTION_DYNAMODB: ${self:resources.Resources.transaction.Properties.TableName}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "arn:aws:dynamodb:${self:provider.environment.REGION}:*:table/${self:provider.environment.TOKEN_DYNAMODB}"
+        - "arn:aws:dynamodb:${self:provider.environment.REGION}:*:table/${self:provider.environment.TRANSACTION_DYNAMODB}"
+
+custom:
+  version: v1
+
+package:
+  individually: true
+
+functions:
+  createToken:
+    handler: bootstrap
+    architecture: arm64
+    events:
+      - http:
+          path: ${self:custom.version}/card/token
+          method: post
+    package:
+      artifact: bin/cmd/createTokenHandler/createTokenHandler.zip
+
+resources:
+  Resources:
+    token:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-token
+        AttributeDefinitions:
+          - AttributeName: tokenID #key or primary key
+            AttributeType: S #Data type
+        KeySchema:
+          - AttributeName: tokenID
+            KeyType: HASH
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+        BillingMode: PAY_PER_REQUEST
+
+    transaction:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-transaction
+        AttributeDefinitions:
+          - AttributeName: cardRequestID #key or primary key
+            AttributeType: S #Data type
+          - AttributeName: transactionIdentifier
+            AttributeType: S #Data type
+        KeySchema:
+          - AttributeName: cardRequestID
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: transactionIdentifierIndex
+            KeySchema:
+              - AttributeName: transactionIdentifier
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+        BillingMode: PAY_PER_REQUEST

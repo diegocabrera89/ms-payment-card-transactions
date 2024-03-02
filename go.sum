@@ -1,0 +1,4 @@
+github.com/aws/aws-lambda-go v1.46.0 h1:UWVnvh2h2gecOlFhHQfIPQcD8pL/f7pVCutmFl+oXU8=
+github.com/aws/aws-lambda-go v1.46.0/go.mod h1:dpMpZgvWx5vuQJfBt0zqBha60q7Dd7RfgJv23DymV8A=
+github.com/diegocabrera89/ms-payment-core v1.0.3 h1:sZdSWDD4M9K8im6k/1d8dRUp4C8UsvrUA+rRfmn900M=
+github.com/diegocabrera89/ms-payment-core v1.0.3/go.mod h1:5N5kToQJtBVsCFT9TDXEKVCgr0ibDNGk6z5EorV5vI8=
