@@ -6,9 +6,17 @@ profile = pet
 
 build: clean gomodgen import
 	$(compile) bin/cmd/createTokenHandler/bootstrap cmd/createTokenHandler/create_token_handler.go
+	$(compile) bin/cmd/chargeCardHandler/bootstrap cmd/chargeCardHandler/charge_card_handler.go
+	$(compile) bin/cmd/getTokenHandler/bootstrap cmd/getTokenHandler/get_token_handler.go
+	$(compile) bin/cmd/refundCardHandler/bootstrap cmd/refundCardHandler/refund_card_handler.go
+	$(compile) bin/cmd/getCardTransactionHandler/bootstrap cmd/getCardTransactionHandler/get_card_transaction_handler.go
 
 zip:
 	$(zipper) bin/cmd/createTokenHandler/createTokenHandler.zip bin/cmd/createTokenHandler/bootstrap
+	$(zipper) bin/cmd/chargeCardHandler/chargeCardHandler.zip bin/cmd/chargeCardHandler/bootstrap
+	$(zipper) bin/cmd/getTokenHandler/getTokenHandler.zip bin/cmd/getTokenHandler/bootstrap
+	$(zipper) bin/cmd/refundCardHandler/refundCardHandler.zip bin/cmd/refundCardHandler/bootstrap
+	$(zipper) bin/cmd/getCardTransactionHandler/getCardTransactionHandler.zip bin/cmd/getCardTransactionHandler/bootstrap
 
 clean:
 	go clean

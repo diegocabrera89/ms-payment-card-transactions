@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/aws/aws-lambda-go v1.46.0
-	github.com/diegocabrera89/ms-payment-core v1.0.3
+	github.com/diegocabrera89/ms-payment-core v1.0.35
 	github.com/google/uuid v1.6.0
 )
 
@@ -27,6 +27,5 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.23.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.28.1 // indirect
 	github.com/aws/smithy-go v1.20.1 // indirect
-	github.com/diegocabrera89/ms-payment-processor v0.0.0-20240301070918-98897515a7b4 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 )

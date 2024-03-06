@@ -22,9 +22,10 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource:
-        - "arn:aws:dynamodb:${self:provider.environment.REGION}:*:table/${self:provider.environment.TOKEN_DYNAMODB}"
-        - "arn:aws:dynamodb:${self:provider.environment.REGION}:*:table/${self:provider.environment.TRANSACTION_DYNAMODB}"
+      Resource: "*" # TODO: Replace with index ARN
+#      Resource:
+#        - "arn:aws:dynamodb:${self:provider.environment.REGION}:*:table/${self:provider.environment.TOKEN_DYNAMODB}"
+#        - "arn:aws:dynamodb:${self:provider.environment.REGION}:*:table/${self:provider.environment.TRANSACTION_DYNAMODB}"
 
 custom:
   version: v1
@@ -43,6 +44,46 @@ functions:
     package:
       artifact: bin/cmd/createTokenHandler/createTokenHandler.zip
 
+  chargeCard:
+    handler: bootstrap
+    architecture: arm64
+    events:
+      - http:
+          path: ${self:custom.version}/card/charge
+          method: post
+    package:
+      artifact: bin/cmd/chargeCardHandler/chargeCardHandler.zip
+
+  getToken:
+    handler: bootstrap
+    architecture: arm64
+    events:
+      - http:
+          path: ${self:custom.version}/card/token/{tokenID}
+          method: get
+    package:
+      artifact: bin/cmd/getTokenHandler/getTokenHandler.zip
+
+  refundCard:
+    handler: bootstrap
+    architecture: arm64
+    events:
+      - http:
+          path: ${self:custom.version}/card/refund
+          method: delete
+    package:
+      artifact: bin/cmd/refundCardHandler/refundCardHandler.zip
+
+  getCardTransaction:
+    handler: bootstrap
+    architecture: arm64
+    events:
+      - http:
+          path: ${self:custom.version}/card/transaction/{tokenID}
+          method: get
+    package:
+      artifact: bin/cmd/getCardTransactionHandler/getCardTransactionHandler.zip
+
 resources:
   Resources:
     token:
@@ -52,9 +93,18 @@ resources:
         AttributeDefinitions:
           - AttributeName: tokenID #key or primary key
             AttributeType: S #Data type
+          - AttributeName: publicID
+            AttributeType: S #Data type
         KeySchema:
           - AttributeName: tokenID
             KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: publicIDIndex
+            KeySchema:
+              - AttributeName: publicID
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
         StreamSpecification:
           StreamViewType: NEW_AND_OLD_IMAGES
         BillingMode: PAY_PER_REQUEST
@@ -64,17 +114,17 @@ resources:
       Properties:
         TableName: ${self:service}-${self:provider.stage}-transaction
         AttributeDefinitions:
-          - AttributeName: cardRequestID #key or primary key
+          - AttributeName: chargeCardID #key or primary key
             AttributeType: S #Data type
-          - AttributeName: transactionIdentifier
+          - AttributeName: token
             AttributeType: S #Data type
         KeySchema:
-          - AttributeName: cardRequestID
+          - AttributeName: chargeCardID
             KeyType: HASH
         GlobalSecondaryIndexes:
-          - IndexName: transactionIdentifierIndex
+          - IndexName: tokenIndex
             KeySchema:
-              - AttributeName: transactionIdentifier
+              - AttributeName: token
                 KeyType: HASH
             Projection:
               ProjectionType: ALL

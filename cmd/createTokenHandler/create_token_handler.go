@@ -37,10 +37,10 @@ func (h *TokenHandler) CreateTokenHandler(ctx context.Context, request events.AP
 
 func main() {
 	// Create an instance of PetHandler in the main function.
-	petHandler := NewTokenHandler()
+	tokenHandler := NewTokenHandler()
 
 	// Wrap the handler function with logging middleware.
-	handlerWithLogging := metadata.MiddlewareMetadata(petHandler.CreateTokenHandler)
+	handlerWithLogging := metadata.MiddlewareMetadata(tokenHandler.CreateTokenHandler)
 
 	// Start the Lambda handler with the handler function wrapped in the middleware.
 	lambda.Start(handlerWithLogging)
