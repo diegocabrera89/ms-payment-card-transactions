@@ -2,7 +2,7 @@ compile = env GOOS=linux  GOARCH=arm64  go build -v -ldflags '-s -w -v' -tags la
 zipper = zip -j -r
 test_to_file = go test -coverprofile=coverage.out
 percent = go tool cover -func=coverage.out | sed 's~\([^/]\{1,\}/\)\{3\}~~' | sed '$d' | sort -g -r -k 3
-profile = pet
+profile = dev
 
 build: clean gomodgen import
 	$(compile) bin/cmd/createTokenHandler/bootstrap cmd/createTokenHandler/create_token_handler.go
