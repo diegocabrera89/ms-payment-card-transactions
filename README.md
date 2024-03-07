@@ -1,6 +1,6 @@
 # ms-payment-card-transactions
 
-Microservice code in GO
+Microservice code in GO. This microservice manages card transactions
 
 ## Pre-steps
 If this is your first time using go and GoLand as an IDE you should check the following tutorial:
